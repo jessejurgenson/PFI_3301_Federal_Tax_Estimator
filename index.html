@@ -145,8 +145,8 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{padding:7px;bor
 </div>
 
 <div class="card"><h2>2. Income</h2>
-<div class="row"><label>Wages & salaries<span class="help">Enter federal taxable wages, generally Form W-2 Box 1 wages. Qualified pre-tax payroll reductions such as Health Flexible Spending Arrangement (Health FSA) or Dependent Care Flexible Spending Arrangement (Dependent Care FSA) contributions are generally already excluded from Box 1 wages, so do not subtract them again.</span></label><div class="money"><input id="wages" type="number" min="0" value="99400"></div></div>
-<div class="row"><label>Taxable interest<span class="help">Enter taxable interest income, such as bank interest reported on Form 1099-INT.</span></label><div class="money"><input id="interest" type="number" min="0" value="600"></div></div>
+<div class="row"><label>Wages & salaries<span class="help">Enter federal taxable wages, generally Form W-2 Box 1 wages. Qualified pre-tax payroll reductions such as Health Flexible Spending Arrangement (Health FSA) or Dependent Care Flexible Spending Arrangement (Dependent Care FSA) contributions are generally already excluded from Box 1 wages, so do not subtract them again.</span></label><div class="money"><input id="wages" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Taxable interest<span class="help">Enter taxable interest income, such as bank interest reported on Form 1099-INT.</span></label><div class="money"><input id="interest" type="number" min="0" value="0"></div></div>
 <div class="row"><label>Ordinary taxable dividends <span class="help">Do not enter qualified dividends here.</span></label><div class="money"><input id="dividends" type="number" min="0" value="0"></div></div>
 <div class="row"><label>Other ordinary taxable income</label><div class="money"><input id="otherIncome" type="number" min="0" value="0"></div></div>
 </div>
@@ -218,7 +218,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{padding:7px;bor
 <div class="row"><label>Total refundable credits</label><div id="refundableTotalDisplay" style="text-align:right;font-weight:800"></div></div>
 
 <h3>Taxes Already Paid</h3>
-<div class="row"><label>Federal income tax withheld<span class="help">Usually Form W-2 Box 2. Enter federal income tax withholding, not Social Security or Medicare tax.</span></label><div class="money"><input id="withholding" type="number" min="0" value="12500"></div></div>
+<div class="row"><label>Federal income tax withheld<span class="help">Usually Form W-2 Box 2. Enter federal income tax withholding, not Social Security or Medicare tax.</span></label><div class="money"><input id="withholding" type="number" min="0" value="0"></div></div>
 <div class="row"><label>Estimated tax payments</label><div class="money"><input id="estimated" type="number" min="0" value="0"></div></div>
 <div class="section-actions no-print"><button type="button" class="secondary" id="resetCredits">Reset Credits</button></div><div class="btns"><button class="primary" id="calc">Calculate Estimate</button><button class="secondary" id="clear">Clear All</button></div>
 </div>
