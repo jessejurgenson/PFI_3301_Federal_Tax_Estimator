@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Federal Income Tax Estimator</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1f2937;--muted:#667085;--line:#d9dee7;--accent:#9b1c1c;--soft:#f8eeee}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+.wrap{max-width:1180px;margin:auto;padding:22px}header{background:#fff;border-bottom:4px solid var(--accent);padding:20px}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{margin:.3rem 0}.notice{margin-top:12px;padding:11px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:18px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:1.18rem}.row{display:grid;grid-template-columns:1fr 175px;gap:12px;align-items:center;margin:8px 0}@media(max-width:540px){.row{grid-template-columns:1fr}}
+label{font-weight:700}.help,.small{font-size:.82rem;color:var(--muted);font-weight:400}
+input,select{width:100%;padding:10px;border:1px solid #bcc5d2;border-radius:9px;font-size:1rem;background:#fff}
+.money{position:relative}.money:before{content:"$";position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#667085}.money input{padding-left:25px}
+button{border:0;border-radius:9px;padding:11px 14px;font-weight:700;cursor:pointer}.primary{background:var(--accent);color:#fff}.secondary{background:#eef1f5}
+.btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.hero{background:var(--soft);border:1px solid #e6c4c4;border-radius:11px;padding:13px;margin-bottom:10px}
+.big{font-size:1.6rem;font-weight:800;color:var(--accent)}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(max-width:520px){.metrics{grid-template-columns:1fr}}
+.metric{border:1px solid var(--line);border-radius:9px;padding:10px}.k{font-size:.78rem;color:var(--muted)}.v{font-weight:800;font-size:1.08rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{padding:7px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{background:#f8fafc}
+.calc{padding:6px 0;border-bottom:1px dashed #e4e7ec}.flow{font-size:.88rem;background:#f8fafc;padding:10px;border-radius:9px;margin-top:10px}
+  .intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  @media(max-width:760px){.intro-grid{grid-template-columns:1fr}}
+  .intro-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .intro-card h2{font-size:1.08rem;margin:0 0 8px}
+  .steps{margin:0;padding-left:1.25rem}.steps li{margin:.4rem 0}
+  .pill{display:inline-block;background:#f2f4f7;border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:.78rem;font-weight:700;margin:2px 4px 2px 0}
+  .teaching-box{background:#f8fafc;border-left:4px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:10px}
+  .mode-toggle{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .mode-toggle label{font-weight:700;font-size:.92rem}
+  .bracket-editor{margin-top:10px}
+  .bracket-row{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;align-items:center;margin:7px 0}
+  .bracket-row input{min-width:0}
+  .icon-btn{padding:9px 10px;background:#eef1f5;color:#344054}
+  .custom-note{font-size:.82rem;color:var(--muted);margin-top:8px}
+  .decision-box{margin-top:12px;padding:12px 14px;border-radius:10px;background:#f8fafc;border:1px solid var(--line)}
+  .decision-box strong{color:var(--accent)}
+  .subgrid{display:grid;grid-template-columns:1fr 170px;gap:10px;align-items:center;margin:7px 0}
+  @media(max-width:540px){.subgrid{grid-template-columns:1fr}}
+
+.mode-banner{padding:10px 12px;border-radius:9px;background:#f8fafc;border:1px solid var(--line);margin:8px 0 12px;font-weight:700}
+.view-toggle{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.view-btn{background:#eef1f5;color:#344054}
+.view-btn.active{background:var(--accent);color:#fff}
+.advanced-only.hidden{display:none!important}
+.results-section{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+.results-section h3{margin:0 0 8px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.compare-grid{grid-template-columns:1fr}}
+.compare-box{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafafa}
+.compare-box.best{border-color:#86b89b;background:#f0fdf4}
+.why{font-size:.82rem;color:var(--muted);margin-top:5px}
+.warning-list{margin:6px 0 0;padding-left:1.2rem}
+.warning-list li{margin:.25rem 0}
+.print-only{display:none}
+.notes{width:100%;min-height:90px;padding:10px;border:1px solid #bcc5d2;border-radius:9px;font:inherit}
+.section-actions{display:flex;justify-content:flex-end;margin-top:8px}
+@media print{
+  body{background:#fff}
+  header,.intro-grid,section>div.grid>section,.btns,.section-actions,.no-print{display:none!important}
+  section>div.grid{display:block!important}
+  aside{width:100%!important}
+  .card{border:0!important;box-shadow:none!important}
+  details{display:block!important}
+  details>*{display:block!important}
+  summary{display:none!important}
+  .print-only{display:block!important}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding:0">
+<div class="eyebrow">Applied Financial Calculators</div>
+<h1>Federal Income Tax Estimator</h1>
+<p>Estimate federal individual income tax and see the calculation from gross income through refund or additional tax due.</p>
+<div class="notice"><b>Educational Use Only.</b> This simplified estimator is not tax-preparation software or tax advice.</div>
+</div></header>
+
+<main class="wrap">
+<section class="card no-print">
+  <h2>Calculator View</h2>
+  <div class="view-toggle" id="viewMode">
+    <button type="button" class="view-btn active" data-view="basic">Basic View</button>
+    <button type="button" class="view-btn" data-view="advanced">Advanced View</button>
+  </div>
+  <p class="small">Basic View shows the most common inputs for an introductory personal finance course. Advanced View reveals custom tax rules and less-common deduction inputs.</p>
+</section>
+<section class="intro-grid" aria-label="Calculator guidance">
+  <div class="intro-card">
+    <h2>How to Use This Calculator</h2>
+    <ol class="steps">
+      <li>Select the <strong>tax year</strong> and <strong>filing status</strong>.</li>
+      <li>Enter the taxpayer's <strong>taxable income sources</strong>.</li>
+      <li>Enter allowable <strong>adjustments to income</strong> to calculate Adjusted Gross Income (AGI).</li>
+      <li>Enter common <strong>itemized deductions</strong>. The calculator will compare the itemized total with the applicable <strong>standard deduction</strong> and show which is larger.</li>
+      <li>Enter applicable <strong>tax credits</strong>, withholding, and estimated payments.</li>
+      <li>Select <strong>Calculate Estimate</strong>, then review the calculation trail and tax-by-bracket table.</li>
+    </ol>
+    <p class="small">For class problems, enter only the information provided unless your instructor directs you otherwise.</p>
+  </div>
+  <div class="intro-card">
+    <h2>What This Calculator Helps You Practice</h2>
+    <span class="pill">Gross Income</span><span class="pill">AGI</span><span class="pill">Taxable Income</span>
+    <span class="pill">Marginal Tax Rate</span><span class="pill">Effective Tax Rate</span>
+    <span class="pill">Tax Credits</span><span class="pill">Refund or Tax Due</span>
+    <div class="teaching-box"><strong>Important:</strong> This tool is designed to show the process, not just the answer. Use the calculation trail to see where each number comes from.</div>
+  </div>
+</section>
+<div class="grid"><section>
+<div class="card"><h2>1. Tax Setup</h2><div class="mode-banner" id="ruleBanner"></div>
+<div class="row"><label>Case or problem name<span class="help">Optional. Use this to label the scenario you are working on.</span></label><input id="caseName" type="text" placeholder="Enter case or problem name"></div>
+<div class="row"><label>Tax setup mode</label>
+<select id="taxMode">
+  <option value="preset">Use preset tax rules (2024, 2025, or 2026)</option>
+  <option value="custom">Enter custom tax brackets and deduction</option>
+</select></div>
+
+<div id="presetSetup">
+  <div class="row"><label>Tax year</label><!-- ANNUAL MAINTENANCE: Add new tax years here when IRS values become available. -->
+<select id="year">
+  <option value="2026">2026</option>
+  <option value="2025">2025</option>
+  <option value="2024">2024</option>
+</select></div>
+  <div class="row"><label>Filing status</label><select id="status"><option value="single">Single</option><option value="mfj">Married Filing Jointly</option><option value="mfs">Married Filing Separately</option><option value="hoh">Head of Household</option></select></div>
+</div>
+
+<div id="customSetup" class="advanced-only" style="display:none">
+  <div class="row"><label>Custom standard deduction<span class="help">Enter the deduction amount provided by your instructor or case.</span></label>
+    <div class="money"><input id="customStandardDeduction" type="number" min="0" step="100" value="0"></div>
+  </div>
+  <div class="bracket-editor">
+    <label>Custom marginal tax brackets</label>
+    <div class="small">Enter the upper limit for each bracket and the marginal tax rate for that bracket. The last bracket can be marked as “No upper limit.”</div>
+    <div id="customBracketRows"></div>
+    <div class="btns">
+      <button type="button" class="secondary" id="addBracket">Add Tax Bracket</button>
+      <button type="button" class="secondary" id="loadSimpleBrackets">Load Simple Example</button>
+    </div>
+    <div class="custom-note">Example: 10% up to $50,000, then 20% above $50,000.</div>
+  </div>
+</div>
+</div>
+
+<div class="card"><h2>2. Income</h2>
+<div class="row"><label>Wages & salaries<span class="help">Enter federal taxable wages, generally Form W-2 Box 1 wages. Qualified pre-tax payroll reductions such as Health Flexible Spending Arrangement (Health FSA) or Dependent Care Flexible Spending Arrangement (Dependent Care FSA) contributions are generally already excluded from Box 1 wages, so do not subtract them again.</span></label><div class="money"><input id="wages" type="number" min="0" value="99400"></div></div>
+<div class="row"><label>Taxable interest<span class="help">Enter taxable interest income, such as bank interest reported on Form 1099-INT.</span></label><div class="money"><input id="interest" type="number" min="0" value="600"></div></div>
+<div class="row"><label>Ordinary taxable dividends <span class="help">Do not enter qualified dividends here.</span></label><div class="money"><input id="dividends" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Other ordinary taxable income</label><div class="money"><input id="otherIncome" type="number" min="0" value="0"></div></div>
+</div>
+
+<div class="card"><h2>3. Adjustments to Income</h2>
+<p class="small">Enter deductible above-the-line adjustments only.</p>
+<div class="row"><label>Deductible traditional IRA contribution</label><div class="money"><input id="ira" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Deductible Health Savings Account (HSA) contribution</label><div class="money"><input id="hsa" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Deductible student loan interest</label><div class="money"><input id="studentLoan" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Other adjustments</label><div class="money"><input id="otherAdj" type="number" min="0" value="0"></div></div>
+</div>
+
+<div class="card"><h2>4. Standard or Itemized Deduction?</h2>
+<p class="small">Enter common itemized deductions below. The calculator will total them and compare the result with the applicable standard deduction.</p>
+
+<div class="row"><label id="stdLabel">2026 standard deduction</label><div id="std" style="text-align:right;font-weight:800"></div></div>
+
+<h3>Common Itemized Deductions</h3>
+<div class="subgrid"><label>Qualified home mortgage interest<span class="help">Enter the allowable deductible amount.</span></label><div class="money"><input id="mortgageInterest" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid"><label>State and local income taxes OR general sales taxes<span class="help">Use the allowable amount for one method, not both.</span></label><div class="money"><input id="saltIncomeSales" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid"><label>State and local real property taxes<span class="help">Includes allowable taxes on a home or other real property. Do not include special assessments for improvements or service charges.</span></label><div class="money"><input id="saltProperty" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid"><label>Eligible personal property taxes<span class="help">Enter allowable state or local taxes based on the value of personal property, when applicable.</span></label><div class="money"><input id="saltPersonalProperty" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid"><label>State and Local Taxes (SALT) amount used<span class="help">The calculator totals the SALT categories above. Enter only allowable amounts after any applicable tax-year limits.</span></label><div id="saltTotalDisplay" style="text-align:right;font-weight:800"></div></div>
+<div class="subgrid"><label>Charitable contributions<span class="help">Enter allowable deductible contributions.</span></label><div class="money"><input id="charity" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid"><label>Medical & dental expenses paid<span class="help">The calculator deducts only the amount above 7.5% of Adjusted Gross Income (AGI).</span></label><div class="money"><input id="medicalPaid" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid advanced-only"><label>Investment interest expense<span class="help">Enter the allowable deductible amount.</span></label><div class="money"><input id="investmentInterest" type="number" min="0" step="100" value="0"></div></div>
+<div class="subgrid advanced-only"><label>Other allowable itemized deductions</label><div class="money"><input id="otherItemized" type="number" min="0" step="100" value="0"></div></div>
+
+<div class="compare-grid">
+  <div class="compare-box" id="standardCompare"><div class="small">Standard Deduction</div><div class="v" id="standardCompareValue">$0</div></div>
+  <div class="compare-box" id="itemizedCompare"><div class="small">Itemized Deductions</div><div class="v" id="itemizedCompareValue">$0</div></div>
+</div>
+<div class="decision-box">
+  <div><span class="small">Calculated itemized deductions</span><div class="v" id="itemizedTotal">$0</div></div>
+  <div style="margin-top:8px"><span class="small">Recommended deduction based on amounts entered</span><div class="v" id="deductionDecision">Standard deduction</div></div>
+  <div class="small" id="deductionDifference"></div>
+</div>
+
+<div class="row" style="margin-top:14px"><label>Deduction method used in estimate</label>
+<select id="deductionType">
+  <option value="auto">Use the larger deduction automatically</option>
+  <option value="standard">Force standard deduction</option>
+  <option value="itemized">Force itemized deductions</option>
+</select></div>
+
+<div class="row"><label>Deduction used</label><div id="deductionUsed" style="text-align:right;font-weight:800"></div></div>
+<p class="small" id="hint"></p><div class="section-actions no-print"><button type="button" class="secondary" id="resetDeductions">Reset Deduction Inputs</button></div>
+</div>
+
+<div class="card"><h2>5. Tax Credits & Taxes Already Paid</h2>
+<p class="small">Enter only the credit amount the taxpayer is eligible to claim. This calculator does not determine eligibility or calculate phaseouts for these credits.</p>
+
+<h3>Common Nonrefundable Credits</h3>
+<div class="row"><label>Child Tax Credit<span class="help">Enter the nonrefundable portion, if applicable.</span></label><div class="money"><input id="childTaxCredit" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Credit for Other Dependents</label><div class="money"><input id="otherDependentCredit" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Child and Dependent Care Credit</label><div class="money"><input id="dependentCareCredit" type="number" min="0" value="0"></div></div>
+<div class="row"><label>American Opportunity Tax Credit (AOTC)<span class="help">Enter the nonrefundable portion here. Any refundable portion belongs below.</span></label><div class="money"><input id="aotcNonref" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Lifetime Learning Credit</label><div class="money"><input id="llc" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Saver's Credit<span class="help">Also called the Retirement Savings Contributions Credit.</span></label><div class="money"><input id="saversCredit" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Residential / energy-related credits</label><div class="money"><input id="energyCredits" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Other nonrefundable credits</label><div class="money"><input id="otherNonrefCredits" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Total nonrefundable credits</label><div id="nonrefTotalDisplay" style="text-align:right;font-weight:800"></div></div>
+
+<h3>Common Refundable Credits</h3>
+<div class="row"><label>Earned Income Tax Credit (EITC)</label><div class="money"><input id="eitc" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Additional Child Tax Credit (ACTC)</label><div class="money"><input id="actc" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Refundable portion of American Opportunity Tax Credit (AOTC)</label><div class="money"><input id="aotcRefundable" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Premium Tax Credit or other refundable credits</label><div class="money"><input id="otherRefundableCredits" type="number" min="0" value="0"></div></div>
+<div class="row"><label>Total refundable credits</label><div id="refundableTotalDisplay" style="text-align:right;font-weight:800"></div></div>
+
+<h3>Taxes Already Paid</h3>
+<div class="row"><label>Federal income tax withheld<span class="help">Usually Form W-2 Box 2. Enter federal income tax withholding, not Social Security or Medicare tax.</span></label><div class="money"><input id="withholding" type="number" min="0" value="12500"></div></div>
+<div class="row"><label>Estimated tax payments</label><div class="money"><input id="estimated" type="number" min="0" value="0"></div></div>
+<div class="section-actions no-print"><button type="button" class="secondary" id="resetCredits">Reset Credits</button></div><div class="btns"><button class="primary" id="calc">Calculate Estimate</button><button class="secondary" id="clear">Clear All</button></div>
+</div>
+</section>
+
+<aside>
+<div class="card" aria-live="polite"><div class="print-only"><h1>Federal Income Tax Estimator Results</h1></div><h2>Estimated Result</h2><div id="caseNameResult" class="small" style="margin-bottom:10px;font-weight:700"></div>
+<div class="hero"><div class="small" id="resultLabel">Estimated additional federal income tax due</div><div class="big" id="resultValue">$0</div></div>
+<div class="results-section"><h3>What You Earned</h3></div>
+<div class="teaching-box"><strong>Remember:</strong> Tax liability is how much federal income tax you owe for the year. A refund is generally the amount you overpaid through withholding, estimated payments, and refundable credits.</div>
+<div class="metrics">
+<div class="metric"><div class="k">Gross Income</div><div class="v" id="gross">$0</div></div>
+<div class="metric"><div class="k">Adjusted Gross Income</div><div class="v" id="agi">$0</div></div>
+<div class="metric"><div class="k">Taxable Income</div><div class="v" id="taxable">$0</div><div class="why">This is the amount used to calculate ordinary federal income tax.</div></div>
+</div><div class="results-section"><h3>What Is Taxable & What You Owe</h3><div class="metrics"><div class="metric"><div class="k">Tax Before Credits</div><div class="v" id="precredit">$0</div></div>
+<div class="metric"><div class="k">Estimated Tax Liability</div><div class="v" id="liability">$0</div></div>
+<div class="metric"><div class="k">Payments + Refundable Credits</div><div class="v" id="payments">$0</div></div>
+<div class="metric"><div class="k">Marginal Tax Rate</div><div class="v" id="marginal">0%</div></div>
+<div class="metric"><div class="k">Effective Tax Rate on Taxable Income</div><div class="v" id="effective">0%</div></div><div class="metric"><div class="k">Federal Income Tax as % of Gross Income</div><div class="v" id="grossEffective">0%</div></div>
+</div>
+<div class="flow"><b>Calculation flow:</b><br>Gross Income → AGI → Taxable Income → Apply Tax Brackets → Subtract Nonrefundable Credits → Tax Liability → Compare with Payments</div>
+<h2 style="margin-top:18px">How Your Tax Was Calculated</h2><div id="trail"></div>
+<h2 style="margin-top:18px">Tax by Bracket</h2>
+<div style="overflow-x:auto"><table><thead><tr><th>Rate</th><th>Income in Bracket</th><th>Tax</th></tr></thead><tbody id="brackets"></tbody></table></div>
+</div>
+
+<div class="card no-print">
+<h2>Interpretation / Notes</h2>
+<p class="small">Use this space to explain what the result means. For example: “The taxpayer is in the 22% marginal bracket, but not all taxable income is taxed at 22%.”</p>
+<textarea id="studentNotes" class="notes" placeholder="Enter interpretation or notes"></textarea>
+<div class="btns"><button type="button" class="secondary" id="printResults">Print / Save Results</button></div>
+</div>
+
+<div class="card no-print"><details>
+<summary style="font-size:1.18rem">Common Mistakes</summary>
+<ul class="warning-list small">
+<li>Applying the highest marginal tax rate to all taxable income.</li>
+<li>Subtracting 401(k), 403(b), Health FSA, Dependent Care FSA, or similar payroll reductions a second time when they are already reflected in federal taxable wages.</li>
+<li>Treating a tax deduction like a tax credit.</li>
+<li>Assuming federal income tax withholding equals final tax liability.</li>
+<li>Entering a full mortgage payment instead of deductible mortgage interest.</li>
+<li>Counting property taxes twice within State and Local Taxes (SALT).</li>
+<li>Assuming all medical expenses are deductible.</li>
+</ul>
+</details></div>
+
+</aside></div>
+
+<section class="card">
+  <details>
+    <summary style="font-size:1.18rem">Tax Calculation FAQs</summary>
+    <p class="small">Use these frequently asked questions to review the major concepts behind the calculator.</p>
+    <div class="flow"><b>Gross Income</b> → subtract adjustments → <b>Adjusted Gross Income (AGI)</b> → subtract standard or itemized deduction → <b>Taxable Income</b> → apply tax brackets → subtract credits → <b>Tax Liability</b></div>
+  <details><summary>Gross Income vs. Adjusted Gross Income (AGI)</summary><p class="small"><strong>Gross income</strong> is taxable income before adjustments. <strong>Adjusted Gross Income (AGI)</strong> is gross income reduced by allowable adjustments to income, sometimes called above-the-line deductions.</p></details>
+  <details><summary>Standard Deduction vs. Itemized Deductions</summary><p class="small">The standard deduction is a fixed amount based mainly on filing status. Itemized deductions are the total of qualifying deductible expenses, such as allowable mortgage interest, state and local taxes, charitable contributions, and certain medical expenses. The calculator compares the two and identifies the larger deduction.</p></details>
+  <details>
+    <summary>Are home property taxes deductible?</summary>
+    <p class="small">Allowable state and local real property taxes on a home can generally be included as an itemized deduction within <strong>State and Local Taxes (SALT)</strong>. Property tax amounts should not be entered twice. Certain assessments for local improvements or specific services are not treated the same as deductible real property taxes.</p>
+  </details>
+  <details><summary>Marginal Tax Rate vs. Effective Tax Rate</summary><p class="small"><strong>Marginal tax rate</strong> is the rate on the next dollar of ordinary taxable income. <strong>Effective tax rate</strong> is estimated tax liability divided by taxable income.</p></details>
+  <details><summary>Tax Credits vs. Tax Deductions</summary><p class="small">A <strong>deduction</strong> reduces income subject to tax. A <strong>credit</strong> reduces tax liability directly. Nonrefundable credits cannot reduce income tax below $0 in this simplified estimator; refundable credits are treated as payments.</p></details>
+  <details>
+    <summary>How are 401(k) and 403(b) contributions treated?</summary>
+    <p class="small"><strong>Traditional 401(k) and 403(b) employee contributions:</strong> These elective deferrals are generally made before federal income tax and are usually already excluded from Form W-2 Box 1 wages. If the case gives you Box 1 wages, do <strong>not</strong> subtract the contribution again.</p>
+    <p class="small"><strong>Roth 401(k) and Roth 403(b) contributions:</strong> These are made after tax and are generally included in Form W-2 Box 1 wages, so they do not reduce current federal taxable income.</p>
+    <div class="teaching-box"><strong>Classroom rule:</strong> Use the federal taxable wage amount provided. Do not subtract traditional workplace retirement contributions again when the tax benefit is already reflected in the wage figure.</div>
+  </details>
+
+  <details>
+    <summary>How are Health FSA and Dependent Care FSA contributions treated?</summary>
+    <p class="small"><strong>Flexible Spending Arrangement (FSA)</strong> contributions made through a qualifying employer cafeteria plan are generally handled through payroll before federal taxable wages are reported. Because this calculator asks for federal taxable wages, usually Form W-2 Box 1, do <strong>not</strong> enter those contributions again as an adjustment to income.</p>
+    <p class="small"><strong>Health Flexible Spending Arrangement (Health FSA):</strong> Employee salary-reduction limits are $3,300 for 2025 and $3,400 for 2026.</p>
+    <p class="small"><strong>Dependent Care Flexible Spending Arrangement (Dependent Care FSA):</strong> The general exclusion limit is $5,000 for 2025 ($2,500 if Married Filing Separately) and $7,500 for 2026 ($3,750 if Married Filing Separately), subject to earned-income and plan rules.</p>
+    <div class="teaching-box"><strong>Classroom rule:</strong> If a case gives Form W-2 Box 1 wages, the FSA tax benefit is generally already reflected in that number. Subtracting the contribution again would double-count the tax benefit.</div>
+  </details>
+  <details><summary>Refund vs. Additional Tax Due</summary><p class="small">A refund occurs when withholding, estimated payments, and refundable credits exceed tax liability. Additional tax is due when liability exceeds those payments. A refund does not mean the taxpayer had no tax liability.</p></details>
+
+  <details>
+    <summary>What is the difference between filing statuses?</summary>
+    <p class="small"><strong>Filing status</strong> affects the standard deduction, tax brackets, filing requirements, and eligibility for some deductions and credits. It is generally based on your marital and household situation at the end of the tax year.</p>
+    <p class="small"><strong>Single:</strong> Generally used if you are unmarried, divorced, or legally separated at the end of the year and do not qualify for another status such as Head of Household.</p>
+    <p class="small"><strong>Married Filing Jointly (MFJ):</strong> Married spouses file one return reporting their combined income, deductions, and credits. For many married couples, this status produces a lower combined federal income tax than filing separately.</p>
+    <p class="small"><strong>Married Filing Separately (MFS):</strong> Married spouses file separate returns. Each spouse reports their own income, deductions, and credits, subject to special rules. Filing separately can limit or eliminate eligibility for some tax benefits.</p>
+    <p class="small"><strong>Head of Household (HOH):</strong> Generally available to an unmarried taxpayer, or certain taxpayers considered unmarried, who paid more than half the cost of maintaining a home for a qualifying person. It typically provides a larger standard deduction and wider tax brackets than Single status.</p>
+    <p class="small"><strong>Qualifying Surviving Spouse:</strong> May be available for up to two years after the year a spouse dies if the taxpayer has a qualifying dependent child and meets the other requirements. This calculator does not currently model this filing status.</p>
+    <div class="teaching-box"><strong>Why this matters:</strong> Two taxpayers with the same income can owe different amounts of federal income tax if their filing statuses are different because the standard deduction and tax-bracket thresholds can differ.</div>
+  </details>
+  </details>
+</section>
+
+<section class="card"><details><summary style="font-size:1.18rem">About This Tool & Important Limits</summary>
+  <p class="small"><strong>Educational-use disclosure:</strong> This calculator is an independently developed instructional resource intended to help students learn the basic structure of federal individual income taxation. It is not tax-preparation software, legal advice, accounting advice, or tax advice.</p>
+  <p class="small">The calculator provides simplified estimates based on the information entered and the tax rules built into the tool. It does not determine whether a taxpayer is eligible for a deduction, credit, filing status, or other tax treatment, and it does not account for every federal tax rule, exception, phaseout, limitation, or special circumstance.</p>
+  <p class="small"><strong>Do not use this calculator to prepare or file a tax return, make a tax election, or make a financial decision that requires professional tax guidance.</strong> For an actual tax return or tax-planning decision, users should consult current Internal Revenue Service guidance and, when appropriate, a qualified tax professional.</p>
+  <p class="small">This calculator is not an official Texas Tech University product and is not affiliated with, endorsed by, operated by, or maintained by Texas Tech University. Texas Tech University is not responsible for the accuracy, availability, maintenance, or use of this independently developed instructional resource.</p>
+  <p class="small">The calculator runs locally in your browser after the page loads. No tax information entered into the calculator is intentionally transmitted to or stored by the calculator itself. Users should still avoid entering sensitive personal information that is unnecessary for a classroom exercise.</p>
+  <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+  <p class="small"><strong>Important limits of this estimator:</strong></p>
+  <p class="small">This classroom estimator models ordinary federal income tax only. Itemized-deduction fields are simplified and generally expect the user to enter an allowable deductible amount after any applicable limits, except medical expenses, where the calculator applies the 7.5%-of-Adjusted-Gross-Income (AGI) threshold. It does not determine eligibility for specific tax credits or deductions and does not fully model qualified dividends or capital gains, self-employment tax, Alternative Minimum Tax (AMT), Net Investment Income Tax (NIIT), Qualified Business Income (QBI), dependent standard-deduction rules, age/blind additional deductions, credit phaseouts, special deductions, penalties, or every Form 1040 rule.</p>
+<p class="small"><b>Source:</b> IRS tax-year 2024, 2025, and 2026 guidance, including Revenue Procedures 2023-34, 2024-40, and 2025-32, IRS Publication 969, IRS Publication 15-B, and IRS Filing Status guidance.</p>
+</details></section>
+</main>
+
+<script>
+/* =========================================================
+   ANNUAL TAX-YEAR DATA
+   ---------------------------------------------------------
+   FUTURE UPDATE INSTRUCTIONS:
+   1. Add the new tax year to the year dropdown in the HTML.
+   2. Copy the most recent year block below and rename it.
+   3. Replace standard deduction amounts for each filing status.
+   4. Replace ordinary-income bracket upper limits for each filing status.
+   5. Keep rates in decimal form (10% = .10, 12% = .12, etc.).
+   6. Keep the last bracket upper limit as Infinity.
+   7. Update the IRS source references in the disclosure/README.
+   8. Test all filing statuses before publishing.
+
+   IMPORTANT:
+   If federal tax law changes the rate structure, filing-status rules,
+   credit treatment, SALT rules, or other major provisions, updating only
+   this data block may not be sufficient.
+   ========================================================= */
+const DATA={
+2024:{
+standard:{single:14600,mfj:29200,mfs:14600,hoh:21900},
+brackets:{
+single:[[11600,.10],[47150,.12],[100525,.22],[191950,.24],[243725,.32],[609350,.35],[Infinity,.37]],
+mfj:[[23200,.10],[94300,.12],[201050,.22],[383900,.24],[487450,.32],[731200,.35],[Infinity,.37]],
+mfs:[[11600,.10],[47150,.12],[100525,.22],[191950,.24],[243725,.32],[365600,.35],[Infinity,.37]],
+hoh:[[16550,.10],[63100,.12],[100500,.22],[191950,.24],[243700,.32],[609350,.35],[Infinity,.37]]
+}},
+2025:{
+standard:{single:15750,mfj:31500,mfs:15750,hoh:23625},
+brackets:{
+single:[[11925,.10],[48475,.12],[103350,.22],[197300,.24],[250525,.32],[626350,.35],[Infinity,.37]],
+mfj:[[23850,.10],[96950,.12],[206700,.22],[394600,.24],[501050,.32],[751600,.35],[Infinity,.37]],
+mfs:[[11925,.10],[48475,.12],[103350,.22],[197300,.24],[250525,.32],[375800,.35],[Infinity,.37]],
+hoh:[[17000,.10],[64850,.12],[103350,.22],[197300,.24],[250500,.32],[626350,.35],[Infinity,.37]]
+}},
+2026:{
+standard:{single:16100,mfj:32200,mfs:16100,hoh:24150},
+brackets:{
+single:[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]],
+mfj:[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]],
+mfs:[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[384350,.35],[Infinity,.37]],
+hoh:[[17700,.10],[67450,.12],[105700,.22],[201750,.24],[256200,.32],[640600,.35],[Infinity,.37]]
+}}
+};
+
+const $=id=>document.getElementById(id);
+const num=id=>Math.max(0,Number($(id)?.value)||0);
+const fmt=x=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:2}).format(x);
+const pct=x=>(x*100).toFixed(1).replace(".0","")+"%";
+
+let customBrackets=[{upper:50000,rate:10},{upper:null,rate:20}];
+
+function renderCustomBrackets(){
+ const host=$("customBracketRows"); host.innerHTML="";
+ customBrackets.forEach((b,i)=>{
+  const row=document.createElement("div"); row.className="bracket-row";
+  row.innerHTML=`<div><label class="small">${i===customBrackets.length-1?"Upper limit (blank = no upper limit)":"Upper limit"}</label><input type="number" min="0" step="100" data-upper="${i}" value="${b.upper===null?"":b.upper}" placeholder="${i===customBrackets.length-1?"No upper limit":"e.g., 50000"}"></div>
+  <div><label class="small">Tax rate (%)</label><input type="number" min="0" max="100" step="0.1" data-rate="${i}" value="${b.rate}"></div>
+  <button type="button" class="icon-btn" data-remove="${i}" aria-label="Remove bracket">×</button>`;
+  host.appendChild(row);
+ });
+ host.querySelectorAll("[data-upper]").forEach(el=>el.addEventListener("input",e=>{const i=+e.target.dataset.upper;customBrackets[i].upper=e.target.value===""?null:Math.max(0,+e.target.value||0);calculate()}));
+ host.querySelectorAll("[data-rate]").forEach(el=>el.addEventListener("input",e=>{customBrackets[+e.target.dataset.rate].rate=Math.max(0,+e.target.value||0);calculate()}));
+ host.querySelectorAll("[data-remove]").forEach(el=>el.addEventListener("click",e=>{if(customBrackets.length>1){customBrackets.splice(+e.currentTarget.dataset.remove,1);renderCustomBrackets();calculate()}}));
+}
+function getCustomBracketArray(){
+ const rows=customBrackets.map(b=>({upper:b.upper===null?Infinity:+b.upper,rate:+b.rate/100})).sort((a,b)=>a.upper-b.upper);
+ if(rows.length&&Number.isFinite(rows[rows.length-1].upper))rows.push({upper:Infinity,rate:rows[rows.length-1].rate});
+ return rows.map(r=>[r.upper,r.rate]);
+}
+function bracketTax(taxable,arr){
+ let prev=0,total=0,marg=0,rows=[];
+ for(const [upper,rate] of arr){if(taxable<=prev)break;const amt=Math.min(taxable,upper)-prev,tax=amt*rate;rows.push([rate,amt,tax]);total+=tax;marg=rate;prev=upper;if(taxable<=upper)break}
+ return{total,marg,rows};
+}
+function updateModeUI(){
+ const custom=$("taxMode").value==="custom";
+ $("presetSetup").style.display=custom?"none":"block";
+ $("customSetup").style.display=custom?"block":"none";
+ $("stdLabel").textContent=custom?"Custom standard deduction":`${$("year").value} standard deduction`;
+ calculate();
+}
+function calculate(){
+ const custom=$("taxMode").value==="custom",status=$("status").value,year=$("year").value,d=DATA[year];
+ const gross=num("wages")+num("interest")+num("dividends")+num("otherIncome");
+ const adj=num("ira")+num("hsa")+num("studentLoan")+num("otherAdj");
+ const agi=Math.max(0,gross-adj);
+ const std=custom?num("customStandardDeduction"):d.standard[status];
+
+ // Itemized deductions
+ const medFloor=agi*.075;
+ const deductibleMedical=Math.max(0,num("medicalPaid")-medFloor);
+ const saltTotal=num("saltIncomeSales")+num("saltProperty")+num("saltPersonalProperty");
+ const itemized=num("mortgageInterest")+saltTotal+num("charity")+deductibleMedical+num("investmentInterest")+num("otherItemized");
+
+ const method=$("deductionType").value;
+ let ded, methodLabel;
+ if(method==="auto"){
+   if(itemized>std){ded=itemized;methodLabel="Itemized deductions";}
+   else{ded=std;methodLabel=custom?"Custom standard deduction":"Standard deduction";}
+ }else if(method==="itemized"){
+   ded=itemized;methodLabel="Itemized deductions";
+ }else{
+   ded=std;methodLabel=custom?"Custom standard deduction":"Standard deduction";
+ }
+
+ const taxable=Math.max(0,agi-ded);
+ const bracketArray=custom?getCustomBracketArray():d.brackets[status];
+ const bt=bracketTax(taxable,bracketArray);
+ const nonref=num("childTaxCredit")+num("otherDependentCredit")+num("dependentCareCredit")+num("aotcNonref")+num("llc")+num("saversCredit")+num("energyCredits")+num("otherNonrefCredits");
+ const refundable=num("eitc")+num("actc")+num("aotcRefundable")+num("otherRefundableCredits");
+ const liab=Math.max(0,bt.total-nonref);
+ const payments=num("withholding")+num("estimated")+refundable,diff=payments-liab,eff=taxable?liab/taxable:0,grossEff=gross?liab/gross:0;
+
+ const caseName=$("caseName") ? $("caseName").value.trim() : "";
+ if($("caseNameResult")) $("caseNameResult").textContent=caseName ? `Case / Problem: ${caseName}` : "";
+ if($("ruleBanner")) $("ruleBanner").textContent = custom ? "Using custom tax rules entered by the student." : `Using ${year} federal tax rules.`;
+ $("std").textContent=fmt(std);
+ if($("standardCompareValue")) $("standardCompareValue").textContent=fmt(std);
+ if($("itemizedCompareValue")) $("itemizedCompareValue").textContent=fmt(itemized);
+ if($("standardCompare") && $("itemizedCompare")){
+   $("standardCompare").classList.toggle("best", std>=itemized);
+   $("itemizedCompare").classList.toggle("best", itemized>std);
+ }
+ $("saltTotalDisplay").textContent=fmt(saltTotal);
+ $("itemizedTotal").textContent=fmt(itemized);
+ $("nonrefTotalDisplay").textContent=fmt(nonref);
+ $("refundableTotalDisplay").textContent=fmt(refundable);
+ $("deductionUsed").textContent=fmt(ded);
+
+ if(itemized>std){
+   $("deductionDecision").textContent="Itemized deductions";
+   $("deductionDifference").textContent=`Itemizing is ${fmt(itemized-std)} larger than the standard deduction based on the amounts entered.`;
+ }else if(std>itemized){
+   $("deductionDecision").textContent=custom?"Custom standard deduction":"Standard deduction";
+   $("deductionDifference").textContent=`The standard deduction is ${fmt(std-itemized)} larger than calculated itemized deductions.`;
+ }else{
+   $("deductionDecision").textContent="Same amount";
+   $("deductionDifference").textContent="The standard deduction and itemized deductions are equal.";
+ }
+
+ $("gross").textContent=fmt(gross);$("agi").textContent=fmt(agi);$("taxable").textContent=fmt(taxable);
+ $("precredit").textContent=fmt(bt.total);$("liability").textContent=fmt(liab);$("payments").textContent=fmt(payments);
+ $("marginal").textContent=taxable?pct(bt.marg):"0%";$("effective").textContent=pct(eff); if($("grossEffective")) $("grossEffective").textContent=pct(grossEff);
+ $("resultLabel").textContent=diff>=0?"Estimated federal tax refund":"Estimated additional federal income tax due";
+ $("resultValue").textContent=fmt(Math.abs(diff));
+
+ if(method==="auto") $("hint").textContent=`The calculator automatically used ${methodLabel.toLowerCase()} because it is the larger deduction.`;
+ else if(method==="itemized" && itemized<std) $("hint").textContent="You forced itemized deductions even though the standard deduction is larger.";
+ else if(method==="standard" && itemized>std) $("hint").textContent="You forced the standard deduction even though itemized deductions are larger.";
+ else $("hint").textContent=`The selected deduction method is ${methodLabel.toLowerCase()}.`;
+
+ $("trail").innerHTML=`
+ <div class="calc">Gross income: ${fmt(gross)}</div>
+ <div class="calc">− Adjustments: ${fmt(adj)}</div>
+ <div class="calc"><b>= Adjusted Gross Income (AGI): ${fmt(agi)}</b></div>
+ <div class="calc">Standard deduction available: ${fmt(std)}</div>
+ <div class="calc">State and Local Taxes (SALT) entered: ${fmt(saltTotal)}</div>
+ <div class="calc">Calculated itemized deductions: ${fmt(itemized)}</div>
+ <div class="calc small">Medical expenses paid: ${fmt(num("medicalPaid"))} − 7.5% of Adjusted Gross Income (AGI) (${fmt(medFloor)}) = ${fmt(deductibleMedical)} deductible medical expense</div>
+ <div class="calc"><b>Deduction used (${methodLabel}): ${fmt(ded)}</b></div>
+ <div class="calc"><b>= Taxable income: ${fmt(taxable)}</b></div>
+ <div class="calc">Tax from marginal brackets: ${fmt(bt.total)}<div class="why">Only the income within each bracket is taxed at that bracket’s rate. Your highest rate is not applied to all taxable income.</div></div>
+ <div class="calc">Total nonrefundable credits entered: ${fmt(nonref)}</div>
+ <div class="calc">− Nonrefundable credits used: ${fmt(Math.min(nonref,bt.total))}</div>
+ <div class="calc"><b>= Estimated tax liability: ${fmt(liab)}</b></div>
+ <div class="calc">Refundable credits: ${fmt(refundable)}</div>
+ <div class="calc">Withholding + estimated payments + refundable credits: ${fmt(payments)}</div>
+ <div class="calc"><b>${diff>=0?"= Estimated refund":"= Additional tax due"}: ${fmt(Math.abs(diff))}</b></div>`;
+
+ const warnings=[];
+ if(gross>0 && itemized>gross) warnings.push("Itemized deductions exceed gross income. Check the entries.");
+ if(gross>0 && num("withholding")>gross*.50) warnings.push("Federal withholding is more than 50% of gross income. Verify that you entered federal income tax withholding rather than total payroll taxes.");
+ if(num("mortgageInterest")>0 && num("mortgageInterest")>gross) warnings.push("Mortgage interest entered exceeds gross income. Verify the amount.");
+ if($("validationWarnings")){
+   $("validationWarnings").innerHTML = warnings.length ? `<div class="notice"><strong>Check these entries:</strong><ul class="warning-list">${warnings.map(w=>`<li>${w}</li>`).join("")}</ul></div>` : "";
+ }
+
+ $("brackets").innerHTML=bt.rows.length?bt.rows.map(r=>`<tr><td>${pct(r[0])}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>`).join(""):`<tr><td colspan="3">No taxable income</td></tr>`;
+}
+function clearAll(){ if($("caseName")) $("caseName").value=""; if($("studentNotes")) $("studentNotes").value="";
+ ["wages","interest","dividends","otherIncome","ira","hsa","studentLoan","otherAdj","mortgageInterest","saltIncomeSales","saltProperty","saltPersonalProperty","charity","medicalPaid","investmentInterest","otherItemized","childTaxCredit","otherDependentCredit","dependentCareCredit","aotcNonref","llc","saversCredit","energyCredits","otherNonrefCredits","eitc","actc","aotcRefundable","otherRefundableCredits","withholding","estimated","customStandardDeduction"].forEach(k=>{if($(k))$(k).value=0});
+ $("deductionType").value="auto";calculate();
+}
+
+$("calc").addEventListener("click",calculate);
+
+$("clear").addEventListener("click",clearAll);
+$("year").addEventListener("change",updateModeUI);
+$("status").addEventListener("change",calculate);
+$("deductionType").addEventListener("change",calculate);
+$("taxMode").addEventListener("change",updateModeUI);
+$("customStandardDeduction").addEventListener("input",calculate);
+["mortgageInterest","saltIncomeSales","saltProperty","saltPersonalProperty","charity","medicalPaid","investmentInterest","otherItemized","childTaxCredit","otherDependentCredit","dependentCareCredit","aotcNonref","llc","saversCredit","energyCredits","otherNonrefCredits","eitc","actc","aotcRefundable","otherRefundableCredits"].forEach(id=>$(id).addEventListener("input",calculate));
+$("addBracket").addEventListener("click",()=>{customBrackets.splice(customBrackets.length-1,0,{upper:null,rate:0});renderCustomBrackets();calculate()});
+$("loadSimpleBrackets").addEventListener("click",()=>{customBrackets=[{upper:50000,rate:10},{upper:null,rate:20}];$("customStandardDeduction").value=0;renderCustomBrackets();calculate()});
+
+renderCustomBrackets();updateModeUI();setView("basic");calculate();
+
+function setView(mode){
+ document.querySelectorAll(".view-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===mode));
+ document.querySelectorAll(".advanced-only").forEach(el=>el.classList.toggle("hidden",mode==="basic"));
+ if(mode==="basic" && $("taxMode") && $("taxMode").value==="custom"){
+   $("taxMode").value="preset"; updateModeUI();
+ }
+}
+document.querySelectorAll(".view-btn").forEach(btn=>btn.addEventListener("click",()=>setView(btn.dataset.view)));
+if($("printResults")) $("printResults").addEventListener("click",()=>window.print());
+if($("caseName")) $("caseName").addEventListener("input",calculate);
+if($("resetCredits")) $("resetCredits").addEventListener("click",()=>{
+ ["childTaxCredit","otherDependentCredit","dependentCareCredit","aotcNonref","llc","saversCredit","energyCredits","otherNonrefCredits","eitc","actc","aotcRefundable","otherRefundableCredits"].forEach(k=>{if($(k))$(k).value=0}); calculate();
+});
+if($("resetDeductions")) $("resetDeductions").addEventListener("click",()=>{
+ ["mortgageInterest","saltIncomeSales","saltProperty","saltPersonalProperty","charity","medicalPaid","investmentInterest","otherItemized"].forEach(k=>{if($(k))$(k).value=0}); $("deductionType").value="auto"; calculate();
+});
+
+</script>
+
+<!--
+=========================================================
+MAINTAINER NOTE: ADDING A NEW TAX YEAR
+---------------------------------------------------------
+Example for 2027:
+1. Add <option value="2027">2027</option> to #year.
+2. Add DATA[2027] with:
+   - standard.single
+   - standard.mfj
+   - standard.mfs
+   - standard.hoh
+   - brackets.single
+   - brackets.mfj
+   - brackets.mfs
+   - brackets.hoh
+3. Confirm every bracket list is ascending and ends with [Infinity, rate].
+4. Update IRS citations and README.
+5. Regression-test 0 taxable income, one-bracket income, and income crossing
+   at least two brackets for each filing status.
+=========================================================
+-->
+
+</body></html>
